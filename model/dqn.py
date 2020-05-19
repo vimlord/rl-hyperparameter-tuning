@@ -53,7 +53,9 @@ class Agent(nn.Module):
         if action is None:
             return Q
         else:
-            idxs = torch.zeros_like(Q).long().cuda()
+            idxs = torch.zeros_like(Q).long()
+            if HAS_CUDA: idxs = idxs.cuda()
+
             idxs[:,0] = action.long()
 
             return Q.gather(1, idxs)[:,0]
@@ -64,7 +66,9 @@ class Agent(nn.Module):
     def choose_action(self, state, randomize=0.1):
         if randomize and random.random() < randomize:
             if len(state.shape) == 1:
-                A = torch.tensor(random.randrange(0, self.n_outputs)).cuda()
+                A = torch.tensor(random.randrange(0, self.n_outputs))
+                if HAS_CUDA: A = A.cuda()
+
                 return A
             else:
                 return numpy_to_torch(

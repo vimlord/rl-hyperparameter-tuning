@@ -6,13 +6,17 @@ import gym
 
 HAS_CUDA = torch.cuda.is_available()
 
+DEVICE = torch.device("cuda" if HAS_CUDA else "cpu")
+
 def numpy_to_torch(x):
     if isinstance(x, (int, float)): return x
-    return torch.from_numpy(x).cuda()
+    y = torch.from_numpy(x)
+    return y.cuda() if HAS_CUDA else y
 
 def torch_to_numpy(x):
     if isinstance(x, (int, float)): return x
-    return x.cpu().detach().numpy()
+    if HAS_CUDA: x = x.cpu()
+    return x.detach().numpy()
 
 class Environment:
     def __init__(self, name='LunarLander-v2'):

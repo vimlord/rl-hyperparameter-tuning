@@ -30,9 +30,11 @@ def create_agent(env):
     state_size = env.observation_space.shape[-1]
     n_actions = env.action_space.n
 
-    return Agent(state_size, n_actions).float().cuda()
+    agent = Agent(state_size, n_actions).float()
+    return agent.cuda() if HAS_CUDA else agent
 
 def train(env_generator,
+        num_threads=4,
         episode_length=2048,
         max_rounds=1024,
         round_len=8,
@@ -94,6 +96,7 @@ def train(env_generator,
         population.add(member)
 
     return execute_training(population,
+            n_threads=num_threads,
             max_rounds=max_rounds,
             round_len=round_len)
 

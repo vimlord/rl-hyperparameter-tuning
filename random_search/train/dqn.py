@@ -15,8 +15,9 @@ import time
 def create_agent(env):
     state_size = env.observation_space.shape[-1]
     n_actions = env.action_space.n
-
-    return Agent(state_size, n_actions).float().cuda()
+    
+    agent = Agent(state_size, n_actions).float()
+    return agent.cuda() if HAS_CUDA else agent
 
 def create_config():
     return ConfigurationGenerator(

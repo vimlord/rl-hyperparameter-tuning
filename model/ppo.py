@@ -56,7 +56,9 @@ class Agent(nn.Module):
         
         if randomize:
             # Select from the distribution of actions
-            weighting = torch.rand(*p.shape).cuda()
+            weighting = torch.rand(*p.shape)
+            if HAS_CUDA: weighting = weighting.cuda()
+
             probs = weighting * p
             a = probs.argmax()#torch.argmax(probs)
         else:

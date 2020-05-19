@@ -11,6 +11,8 @@ import pbt.train.dqn
 
 import argparse
 
+from torch import multiprocessing as mp
+
 parser = argparse.ArgumentParser(
         description='Trains an RL agent using Population-Based Training'
 )
@@ -28,6 +30,12 @@ parser.add_argument('--max-rounds',
         default=1024,
         type=int,
         help='The number of rounds to run per population member')
+
+
+parser.add_argument('--num-threads',
+        default=mp.cpu_count(),
+        type=int,
+        help='The number of threads to use')
 
 parser.add_argument('--round-len',
         default=8,
@@ -62,6 +70,7 @@ print('Algorithm:', args.algo)
 print('Environment:', env_name)
 
 trainer = training_module.train(lambda: Environment(env_name),
+        num_threads=args.num_threads,
         episode_length=args.episode_length,
         max_rounds=args.max_rounds,
         round_len=args.round_len,

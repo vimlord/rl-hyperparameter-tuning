@@ -7,6 +7,8 @@ import random
 
 from procedure import TrainingProcedure
 
+from util import HAS_CUDA
+
 class PPOTrainingProcedure(TrainingProcedure):
     def __init__(self,
             env,
@@ -55,8 +57,12 @@ class PPOTrainingProcedure(TrainingProcedure):
         A = torch.stack(A).detach()
         S1 = torch.stack(S1).detach()
         P = torch.stack(P).detach()
-        R = torch.Tensor(R).cuda()
-        D = torch.Tensor(D).cuda()
+        R = torch.Tensor(R)
+        D = torch.Tensor(D)
+
+        if HAS_CUDA:
+            R = R.cuda()
+            D = D.cuda()
 
         if self.use_reward_normalization:
             R = ((R - R.mean()) / (R.std() + 1e-6)).detach()
@@ -90,7 +96,8 @@ class PPOTrainingProcedure(TrainingProcedure):
         
         # Compute advantage
         if self.use_gae:
-            Adv = torch.zeros((A.size()[0]),).cuda()
+            Adv = torch.zeros((A.size()[0]),)
+            if HAS_CUDA: Adv = Adv.cuda()
 
             # Mask determines whether or not to permit propagation of future Q/V values
             # This allows separation of episodes.

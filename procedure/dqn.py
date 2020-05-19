@@ -11,7 +11,7 @@ from procedure import TrainingProcedure
 
 import threading
 
-from util import numpy_to_torch
+from util import numpy_to_torch, HAS_CUDA
 
 class MemoryBuffer:
     def __init__(self, dims=5, max_size=10000):
@@ -47,7 +47,9 @@ class MemoryBuffer:
 
                 if isinstance(d[0], (float, int, np.float64)) or len(d[0].shape) == 0:
                     #data.append(numpy_to_torch(np.array(d)))
-                    data.append(torch.tensor(d).cuda())
+                    d = torch.tensor(d)
+                    if HAS_CUDA: d = d.cuda()
+                    data.append(d)
                 else:
                     data.append(torch.stack(d))
 
